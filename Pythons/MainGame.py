@@ -30,6 +30,7 @@ def message_on_screen(message, color, pos):
 def eat(snake,apple,wallwidth):
     if snake.getXpos()>=apple.getPosition()[0] and snake.getXpos()<apple.getPosition()[0]+apple.getWidth() and snake.getYpos()>=apple.getPosition()[1] and snake.getYpos()<apple.getPosition()[1]+apple.getWidth():
         apple.place(snake,wallwidth,window)
+        snake.incrementLength()
 
 ##################### LOOP FUNCTION ########################################
 
@@ -54,8 +55,7 @@ def gameLoop():
     ################################  Apple Variables  ############################
     apple = gameObjects.Food(snake,wallwidth,window)
     ############################### GAME FPS ######################
-    fps = 50
-
+    fps = 25
     ############################### Boolean Loop ###################
     MainLoop = True
     GameOver = False
@@ -88,11 +88,16 @@ def gameLoop():
                 MainLoop = False
 
             elif event.type == pygame.KEYDOWN:
-                snake.movementChange(event)
+                if snake.movementChange(event):
+                    break
 
-        ###############  Snake Direction Changing  ##########################################
+        ###############  Snake eating apple  ###################
+        eat(snake,apple,wallwidth)
 
-        snake.movementUpdate(window)
+##############  Snake Direction Changing  ##########################################
+
+        GameOver = snake.movementUpdate(window)
+
  #################  Snake collision with boundary  #######################################
         leftboundary = leftwall + wallwidth
         rightboundary = rightwall - snake.getWidth()
@@ -101,8 +106,7 @@ def gameLoop():
 
         if snake.getXpos() < leftboundary or snake.getXpos() > rightboundary or snake.getYpos() < topboundary or snake.getYpos() > bottomboundary:
             GameOver = True
-        ###############  Snake eating apple  ###################
-        eat(snake,apple,wallwidth)
+
   #################  Graphics #################################################
         displayObject.fill(gameObjects.white)
 
